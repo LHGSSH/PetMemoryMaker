@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">Pet Memory Maker</string>
+    <string name="app_name">PetHeart</string>
+    <string name="memory_title_label">Title</string>
+    <string name="memory_title_hint">Enter the title for the memory...</string>
+    <string name="memory_favorite_label">Favorite</string>
+    <string name="memory_description_label">Description</string>
+    <string name="memory_description_hint">Enter a description for the memory...</string>
 </resources>
