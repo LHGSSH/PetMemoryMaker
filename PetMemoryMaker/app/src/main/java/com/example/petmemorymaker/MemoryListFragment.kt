@@ -2,13 +2,12 @@ package com.example.petmemorymaker
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +16,7 @@ private const val TAG = "MemoryListFragment"
 
 class MemoryListFragment: Fragment() {
     private lateinit var memoryRecyclerView: RecyclerView
-    private var adapter: MemoryAdapter? = null
+    private var adapter: MemoryAdapter? = MemoryAdapter(emptyList())
 
     private val memoryListViewModel: MemoryListViewModel by lazy {
         ViewModelProviders.of(this).get(MemoryListViewModel::class.java)
@@ -25,7 +24,7 @@ class MemoryListFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "Total memories: ${memoryListViewModel.memories.size}")
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -38,13 +37,34 @@ class MemoryListFragment: Fragment() {
         memoryRecyclerView = view.findViewById(R.id.memory_recycler_view) as RecyclerView
         memoryRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        updateUI()
-
         return view
     }
 
-    private fun updateUI() {
-        val memories = memoryListViewModel.memories
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        memoryListViewModel.memories.observe(
+            viewLifecycleOwner,
+            Observer { memories ->
+                memories?.let {
+                    Log.i(TAG, "Got memories ${memories.size}")
+                    updateUI(memories)
+                }
+
+            }
+        )
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_memory_list, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.d(TAG, "Menu Item Selected")
+        return true
+    }
+
+    private fun updateUI(memories: List<Memory>) {
         adapter = MemoryAdapter(memories)
         memoryRecyclerView.adapter = adapter
     }

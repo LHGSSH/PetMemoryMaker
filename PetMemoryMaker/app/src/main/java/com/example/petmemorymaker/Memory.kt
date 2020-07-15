@@ -1,10 +1,13 @@
 package com.example.petmemorymaker
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.util.*
 
-data class Memory ( val id: UUID = UUID.randomUUID(),
-                    var title: String = "",
-                    var date: Date = Date(),
-                    var isFavorited: Boolean = false,
-                    var description: String = ""
+@Entity
+data class Memory (@PrimaryKey val id: UUID = UUID.randomUUID(),
+                   var title: String = "",
+                   var date: Date = Date(),
+                   var isFavorited: Boolean = false,
+                   var description: String = ""
 )
