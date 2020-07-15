@@ -21,9 +21,9 @@
             android:id="@+id/favorite_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="240dp"
+            android:layout_marginLeft="230dp"
             android:checked="false"
-            android:text="@string/memory_favorite_label"/>
+            android:text="@string/memory_favorite_label" />
     </LinearLayout>
 
 

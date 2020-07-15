@@ -10,8 +10,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Switch
 import androidx.fragment.app.Fragment
+import java.util.*
 
-class MemoryFragment: Fragment() {
+private const val DIALOG_DATE = "DialogDate"
+private const val REQUEST_DATE = 0
+
+class MemoryFragment: Fragment(), DatePickerFragment.Callbacks {
     private lateinit var memory: Memory
     private lateinit var titleField: EditText
     private lateinit var dateButton: Button
@@ -32,11 +36,6 @@ class MemoryFragment: Fragment() {
         titleField = view.findViewById(R.id.memory_title) as EditText
         dateButton = view.findViewById(R.id.memory_date) as Button
         favoriteSwitch = view.findViewById(R.id.favorite_switch) as Switch
-
-        dateButton.apply {
-            text = memory.date.toString()
-            isEnabled = false
-        }
 
         return view
     }
@@ -68,5 +67,23 @@ class MemoryFragment: Fragment() {
         favoriteSwitch.apply {
             setOnCheckedChangeListener { _, isChecked -> memory.isFavorited = isChecked }
         }
+
+        dateButton.setOnClickListener {
+            DatePickerFragment.newInstance(memory.date).apply {
+                setTargetFragment(this@MemoryFragment, REQUEST_DATE)
+                show(this@MemoryFragment.requireFragmentManager(), DIALOG_DATE)
+            }
+        }
+
+        updateUI()
+    }
+
+    fun updateUI() {
+        dateButton.text = memory.date.toString()
+    }
+
+    override fun onDateSelected(date: Date) {
+        memory.date = date
+        updateUI()
     }
 }
