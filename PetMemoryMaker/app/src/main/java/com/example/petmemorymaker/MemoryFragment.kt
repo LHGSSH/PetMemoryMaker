@@ -10,20 +10,28 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Switch
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import java.util.*
 
 private const val DIALOG_DATE = "DialogDate"
 private const val REQUEST_DATE = 0
+private const val ARG_MEMORY_ID = "memory_id"
 
 class MemoryFragment: Fragment(), DatePickerFragment.Callbacks {
     private lateinit var memory: Memory
     private lateinit var titleField: EditText
     private lateinit var dateButton: Button
     private lateinit var favoriteSwitch: Switch
+    private val memoryDetailViewModel: MemoryDetailViewModel by lazy {
+        ViewModelProviders.of(this).get(MemoryDetailViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         memory = Memory()
+        val memoryId: UUID = arguments?.getSerializable(ARG_MEMORY_ID) as UUID
+        memoryDetailViewModel.loadMemory(memoryId)
     }
 
     override fun onCreateView(
@@ -38,6 +46,20 @@ class MemoryFragment: Fragment(), DatePickerFragment.Callbacks {
         favoriteSwitch = view.findViewById(R.id.favorite_switch) as Switch
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        memoryDetailViewModel.memoryData.observe(
+            viewLifecycleOwner,
+            Observer {
+                memory ->
+                memory?.let {
+                    this.memory = memory
+                    updateUI()
+                }
+            }
+        )
     }
 
     override fun onStart() {
@@ -78,12 +100,33 @@ class MemoryFragment: Fragment(), DatePickerFragment.Callbacks {
         updateUI()
     }
 
+    override fun onStop() {
+        super.onStop()
+        memoryDetailViewModel.saveMemory(memory)
+    }
+
     fun updateUI() {
+        titleField.setText(memory.title)
         dateButton.text = memory.date.toString()
+        favoriteSwitch.apply {
+            isChecked = memory.isFavorited
+            jumpDrawablesToCurrentState()
+        }
     }
 
     override fun onDateSelected(date: Date) {
         memory.date = date
         updateUI()
+    }
+
+    companion object {
+        fun newInstance(memoryId: UUID) : MemoryFragment {
+            val args = Bundle().apply {
+                putSerializable(ARG_MEMORY_ID,  memoryId)
+            }
+            return MemoryFragment().apply {
+                arguments = args
+            }
+        }
     }
 }

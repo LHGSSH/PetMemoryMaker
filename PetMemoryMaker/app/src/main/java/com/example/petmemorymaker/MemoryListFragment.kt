@@ -1,5 +1,6 @@
 package com.example.petmemorymaker
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -11,15 +12,27 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.*
 
 private const val TAG = "MemoryListFragment"
 
 class MemoryListFragment: Fragment() {
+    interface Callbacks {
+        fun onMemorySelected(memoryId: UUID)
+    }
+
+    private var callbacks: Callbacks? = null
+
     private lateinit var memoryRecyclerView: RecyclerView
     private var adapter: MemoryAdapter? = MemoryAdapter(emptyList())
 
     private val memoryListViewModel: MemoryListViewModel by lazy {
         ViewModelProviders.of(this).get(MemoryListViewModel::class.java)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callbacks = context as Callbacks?
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,8 +73,20 @@ class MemoryListFragment: Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Log.d(TAG, "Menu Item Selected")
-        return true
+        return when(item.itemId) {
+            R.id.new_memory -> {
+                val memory = Memory()
+                memoryListViewModel.addMemory(memory)
+                callbacks?.onMemorySelected(memory.id)
+                true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
     }
 
     private fun updateUI(memories: List<Memory>) {
@@ -106,7 +131,7 @@ class MemoryListFragment: Fragment() {
         }
 
         override fun onClick(view: View) {
-            Toast.makeText(context, "${memory.title} pressed!", Toast.LENGTH_SHORT).show()
+            callbacks?.onMemorySelected(memory.id)
         }
     }
 
