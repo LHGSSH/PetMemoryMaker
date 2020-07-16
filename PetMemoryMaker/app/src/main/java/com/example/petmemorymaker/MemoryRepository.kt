@@ -37,6 +37,12 @@ class MemoryRepository private constructor(context: Context) {
         }
     }
 
+    fun deleteMemory(memory: Memory) {
+        executor.execute {
+            memoryDao.deleteMemory(memory)
+        }
+    }
+
     fun getPhotoFile(memory: Memory) : File = File(filesDir, memory.photoFileName)
 
     companion object {
