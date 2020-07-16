@@ -1,21 +1,22 @@
 package com.example.petmemorymaker
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Switch
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import android.text.format.DateFormat
 import java.util.*
 
 private const val DIALOG_DATE = "DialogDate"
 private const val REQUEST_DATE = 0
+private const val DATE_FORMAT = "EEE, MMM, dd"
 private const val ARG_MEMORY_ID = "memory_id"
 
 class MemoryFragment: Fragment(), DatePickerFragment.Callbacks {
@@ -33,6 +34,7 @@ class MemoryFragment: Fragment(), DatePickerFragment.Callbacks {
         memory = Memory()
         val memoryId: UUID = arguments?.getSerializable(ARG_MEMORY_ID) as UUID
         memoryDetailViewModel.loadMemory(memoryId)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -48,6 +50,28 @@ class MemoryFragment: Fragment(), DatePickerFragment.Callbacks {
         descriptionField = view.findViewById(R.id.memory_description) as EditText
 
         return view
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_memory, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.share_memory -> {
+                Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, getSharedMemory())
+                    putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_memory_subject))
+                }.also { intent ->
+                    val chooserIntent = Intent.createChooser(intent, getString(R.string.share_memory_dialog))
+                    startActivity(chooserIntent)
+                }
+                true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -141,6 +165,16 @@ class MemoryFragment: Fragment(), DatePickerFragment.Callbacks {
     override fun onDateSelected(date: Date) {
         memory.date = date
         updateUI()
+    }
+
+    private fun getSharedMemory(): String {
+        val titleString = memory.title
+
+        val dateString = DateFormat.format(DATE_FORMAT, memory.date).toString()
+
+        val descriptionString = memory.description
+
+        return getString(R.string.share_memory, titleString, dateString, descriptionString)
     }
 
     companion object {
