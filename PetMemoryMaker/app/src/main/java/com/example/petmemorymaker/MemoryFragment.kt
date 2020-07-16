@@ -23,6 +23,7 @@ class MemoryFragment: Fragment(), DatePickerFragment.Callbacks {
     private lateinit var titleField: EditText
     private lateinit var dateButton: Button
     private lateinit var favoriteSwitch: Switch
+    private lateinit var descriptionField: EditText
     private val memoryDetailViewModel: MemoryDetailViewModel by lazy {
         ViewModelProviders.of(this).get(MemoryDetailViewModel::class.java)
     }
@@ -44,6 +45,7 @@ class MemoryFragment: Fragment(), DatePickerFragment.Callbacks {
         titleField = view.findViewById(R.id.memory_title) as EditText
         dateButton = view.findViewById(R.id.memory_date) as Button
         favoriteSwitch = view.findViewById(R.id.favorite_switch) as Switch
+        descriptionField = view.findViewById(R.id.memory_description) as EditText
 
         return view
     }
@@ -97,6 +99,27 @@ class MemoryFragment: Fragment(), DatePickerFragment.Callbacks {
             }
         }
 
+        val descriptionWatcher = object: TextWatcher {
+            override fun beforeTextChanged(sequence: CharSequence?,
+                                           start: Int,
+                                           count: Int,
+                                           after: Int) {
+                //This is left blank
+            }
+
+            override fun onTextChanged(sequence: CharSequence?,
+                                       start: Int,
+                                       before: Int,
+                                       count: Int) {
+                memory.description = sequence.toString()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                //This is left blank
+            }
+        }
+        descriptionField.addTextChangedListener(descriptionWatcher)
+
         updateUI()
     }
 
@@ -112,6 +135,7 @@ class MemoryFragment: Fragment(), DatePickerFragment.Callbacks {
             isChecked = memory.isFavorited
             jumpDrawablesToCurrentState()
         }
+        descriptionField.setText(memory.description)
     }
 
     override fun onDateSelected(date: Date) {
