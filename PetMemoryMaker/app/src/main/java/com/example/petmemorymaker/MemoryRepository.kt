@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.example.petmemorymaker.database.MemoryDatabase
+import java.io.File
 import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.Executors
@@ -19,19 +20,24 @@ class MemoryRepository private constructor(context: Context) {
 
     private val memoryDao = database.memoryDao()
     private val executor = Executors.newSingleThreadExecutor()
+    private val filesDir = context.applicationContext.filesDir
 
     fun getMemories() : LiveData<List<Memory>> = memoryDao.getMemories()
     fun getMemory(id: UUID): LiveData<Memory?> = memoryDao.getMemory(id)
+
     fun updateMemory(memory: Memory) {
         executor.execute{
             memoryDao.updateMemory(memory)
         }
     }
+
     fun addMemory(memory: Memory) {
         executor.execute {
             memoryDao.addMemory(memory)
         }
     }
+
+    fun getPhotoFile(memory: Memory) : File = File(filesDir, memory.photoFileName)
 
     companion object {
         private var INSTANCE: MemoryRepository? = null
