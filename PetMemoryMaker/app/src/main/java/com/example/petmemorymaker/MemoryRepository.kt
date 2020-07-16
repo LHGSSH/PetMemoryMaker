@@ -23,6 +23,7 @@ class MemoryRepository private constructor(context: Context) {
     private val filesDir = context.applicationContext.filesDir
 
     fun getMemories() : LiveData<List<Memory>> = memoryDao.getMemories()
+    fun getFavoritedMemories() : LiveData<List<Memory>> = memoryDao.getFavoritedMemories()
     fun getMemory(id: UUID): LiveData<Memory?> = memoryDao.getMemory(id)
 
     fun updateMemory(memory: Memory) {

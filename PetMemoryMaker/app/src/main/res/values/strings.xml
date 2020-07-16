@@ -6,6 +6,8 @@
     <string name="memory_description_label">Description</string>
     <string name="memory_description_hint">Enter a description for the memory...</string>
     <string name="new_memory">New Memory</string>
+    <string name="show_favorited_memories">Show Favorited Memories</string>
+    <string name="show_all_memories">Show All Memories</string>
     <string name="share_memory_label">Share Memory</string>
     <string name="delete_memory">Delete Memory</string>
     <string name="share_memory">Remember %1$s! It happened on %2$s. Remember %3$s!</string>

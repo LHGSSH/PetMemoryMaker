@@ -10,6 +10,9 @@ interface MemoryDao {
     @Query("SELECT * FROM Memory")
     fun getMemories() : LiveData<List<Memory>>
 
+    @Query("SELECT * FROM Memory WHERE isFavorited=1")
+    fun getFavoritedMemories() : LiveData<List<Memory>>
+
     @Query("SELECT * FROM Memory WHERE id=(:id)")
     fun getMemory(id: UUID) : LiveData<Memory?>
 

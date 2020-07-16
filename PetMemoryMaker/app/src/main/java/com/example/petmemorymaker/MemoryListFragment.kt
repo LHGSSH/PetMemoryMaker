@@ -62,7 +62,6 @@ class MemoryListFragment: Fragment() {
                     Log.i(TAG, "Got memories ${memories.size}")
                     updateUI(memories)
                 }
-
             }
         )
     }
@@ -78,6 +77,30 @@ class MemoryListFragment: Fragment() {
                 val memory = Memory()
                 memoryListViewModel.addMemory(memory)
                 callbacks?.onMemorySelected(memory.id)
+                true
+            }
+            R.id.show_favorited_memories -> {
+                memoryListViewModel.favoritedMemories.observe(
+                    viewLifecycleOwner,
+                    Observer { favoritedMemories ->
+                        favoritedMemories?.let {
+                            Log.i(TAG, "Got favorited memories ${favoritedMemories.size}")
+                            updateUI(favoritedMemories)
+                        }
+                    }
+                )
+                true
+            }
+            R.id.show_all_memories -> {
+                memoryListViewModel.memories.observe(
+                    viewLifecycleOwner,
+                    Observer { memories ->
+                        memories?.let {
+                            Log.i(TAG, "Got memories ${memories.size}")
+                            updateUI(memories)
+                        }
+                    }
+                )
                 true
             }
             else -> return super.onOptionsItemSelected(item)
