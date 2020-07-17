@@ -1,16 +1,19 @@
 package com.example.petmemorymaker
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.io.File
 import java.util.*
 
 private const val TAG = "MemoryListFragment"
@@ -135,6 +138,9 @@ class MemoryListFragment: Fragment() {
         private val titleTextView: TextView = itemView.findViewById(R.id.memory_title)
         private val dateTextView: TextView = itemView.findViewById(R.id.memory_date)
         private val favoritedImageView: ImageView = itemView.findViewById(R.id.favorited)
+        private lateinit var photoFile: File
+        private lateinit var photoUri: Uri
+        private val photoView: ImageView = itemView.findViewById(R.id.memory_list_photo)
 
         init {
             itemView.setOnClickListener(this)
@@ -144,11 +150,29 @@ class MemoryListFragment: Fragment() {
             this.memory = memory
             titleTextView.text = this.memory.title
             dateTextView.text = this.memory.date.toString()
+
+            photoFile = memoryListViewModel.getPhotoFile(memory)
+            photoUri = FileProvider.getUriForFile(
+                requireActivity(),
+                "com.example.petmemorymaker.fileprovider",
+                photoFile
+            )
+            updatePhotoView()
+
             favoritedImageView.visibility = if (memory.isFavorited) {
                 View.VISIBLE
             }
             else {
                 View.GONE
+            }
+        }
+
+        private fun updatePhotoView() {
+            if (photoFile.exists()) {
+                val bitmap = getScaledBitmap(photoFile.path, requireActivity())
+                photoView.setImageBitmap(bitmap)
+            } else {
+                photoView.setImageBitmap(null)
             }
         }
 
