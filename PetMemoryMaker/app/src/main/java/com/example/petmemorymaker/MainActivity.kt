@@ -1,5 +1,6 @@
 package com.example.petmemorymaker
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,24 +13,22 @@ class MainActivity : AppCompatActivity(), MemoryListFragment.Callbacks {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container_main)
 
         if (currentFragment == null) {
             val fragment = MemoryListFragment.newInstance()
 
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragment_container, fragment)
+                .add(R.id.fragment_container_main, fragment)
                 .commit()
         }
     }
 
     override fun onMemorySelected(memoryId: UUID) {
-        val fragment = MemoryFragment.newInstance(memoryId)
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
+        val intent = Intent(this, DetailActivity::class.java).apply {
+            putExtra(EXTRA_MEMORY_ID, memoryId.toString())
+        }
+        startActivity(intent)
     }
 }

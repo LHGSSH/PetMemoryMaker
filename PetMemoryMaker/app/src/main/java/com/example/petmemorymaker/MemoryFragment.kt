@@ -89,7 +89,7 @@ class MemoryFragment : Fragment(), DatePickerFragment.Callbacks {
             R.id.delete_memory -> {
                 val memory = this.memory
                 memoryDetailViewModel.deleteMemory(memory)
-                fragmentManager?.popBackStack()
+                activity?.finish()
                 true
             }
             else -> return super.onOptionsItemSelected(item)
